@@ -1,8 +1,21 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
+import styled from 'styled-components';
+
+const maxWidth = '999px';
+const minWidth = '1000px';
+
+const Container = styled.div`
+  @media screen and (max-width: ${maxWidth}) {
+    display: ${(prop) => (!prop.menuProp ? 'initial' : 'none')};
+  }
+`;
 
 const Footer = () => {
+  const navOpen = useSelector((state) => state.nav.navOpen);
+
   return (
-    <div>
+    <Container menuProp={navOpen}>
       <nav-bottom>
         <div>Our company</div>
 
@@ -38,7 +51,7 @@ const Footer = () => {
           <li>Licenses</li>
         </ul>
       </nav-bottom>
-    </div>
+    </Container>
   );
 };
 

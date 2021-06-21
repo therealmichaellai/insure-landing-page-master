@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { navOpenTrue, navOpenFalse } from '../redux/navSlice';
 import styled from 'styled-components';
 
-const maxWidth = '999px';
-const minWidth = '1000px';
+const maxWidth = '849px';
+const minWidth = '850px';
 
 const NavContainer = styled.div`
   @media screen and (min-width: ${minWidth}) {
     display: flex;
+    /*     position: fixed;
+    z-index: 1; */
   }
   @media screen and (max-width: ${maxWidth}) {
     width: 100vw;
     background-color: white;
+    /*     position: fixed;
+    z-index: 1; */
     position: ${(prop) => (prop.menuProp ? 'fixed' : 'static')};
   }
 `;
@@ -30,6 +36,8 @@ const NavBar = styled.div`
     width: 100vw;
     height: 70px;
     background-color: white;
+    position: relative;
+    z-index: 3;
   }
 `;
 
@@ -43,7 +51,7 @@ const NavLogo = styled.div`
 `;
 
 const HamburgerMenu = styled.a`
-  margin-right: 35px;
+  margin-right: 25px;
   &:hover {
     cursor: pointer;
   }
@@ -53,11 +61,11 @@ const HamburgerMenu = styled.a`
   }
 `;
 
-const OpenMenu = styled.a`
+const OpenMenu = styled.div`
   display: ${(prop) => (prop.menuProp ? 'none' : 'block')};
 `;
 
-const CloseMenu = styled.a`
+const CloseMenu = styled.div`
   display: ${(prop) => (prop.menuProp ? 'block' : 'none')};
 `;
 
@@ -73,6 +81,7 @@ const NavMenu = styled.div`
   @media screen and (min-width: ${minWidth}) {
     display: initial;
     list-style-type: none;
+    position: relative;
   }
 `;
 
@@ -80,17 +89,17 @@ const NavList = styled.ul`
   @media screen and (max-width: ${maxWidth}) {
     text-align: center;
     font-size: 18px;
-    padding-top: 30px;
     list-style-type: none;
+    padding: 30px 16px 0 16px;
   }
   @media screen and (min-width: ${minWidth}) {
     height: 100%;
-    display: initial;
+    display: block;
     list-style-type: none;
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    width: 450px;
+    width: 550px;
     margin-right: 150px;
   }
 `;
@@ -98,15 +107,14 @@ const NavList = styled.ul`
 const ListItem = styled.div`
   @media screen and (max-width: ${maxWidth}) {
     border: 1px solid hsl(270, 9%, 17%);
-    padding: 14px 0;
-    margin: 0px 30px 8px 30px;
+    padding: 11px 0;
     &:hover {
       border: 1px solid white;
       cursor: pointer;
     }
   }
   @media screen and (min-width: ${minWidth}) {
-    margin: 0 10px;
+    margin: 0 0;
   }
 `;
 
@@ -116,11 +124,26 @@ const Link = styled.a`
     color: white;
     text-transform: uppercase;
   }
-
   @media screen and (min-width: ${minWidth}) {
     text-decoration: none;
     color: hsl(273, 4%, 51%);
     text-transform: uppercase;
+    margin: 0 16px;
+    &:hover {
+      color: hsl(270, 9%, 17%);
+    }
+  }
+`;
+
+const ViewPlans = styled(Link)`
+  @media screen and (min-width: ${minWidth}) {
+    border: 2px solid hsl(270, 9%, 17%);
+    padding: 8px 35px;
+    margin: 0 0 0 16px;
+    &:hover {
+      background-color: hsl(270, 9%, 17%);
+      color: white;
+    }
   }
 `;
 
@@ -135,15 +158,19 @@ const NavMenuLogo = styled.div`
 `;
 
 const Nav = () => {
-  const [navMenuOpen, setNavMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navOpen = useSelector((state) => state.nav.navOpen);
 
-  const handleMenuToggle = () => {
-    if (navMenuOpen === false) setNavMenuOpen(true);
-    else setNavMenuOpen(false);
+  const openNav = () => {
+    if (navOpen) {
+      dispatch(navOpenFalse());
+    } else {
+      dispatch(navOpenTrue());
+    }
   };
 
   return (
-    <NavContainer menuProp={navMenuOpen}>
+    <NavContainer menuProp={navOpen}>
       <NavBar>
         <NavLogo>
           <svg xmlns='http://www.w3.org/2000/svg' width='112' height='18'>
@@ -153,8 +180,8 @@ const Nav = () => {
             />
           </svg>
         </NavLogo>
-        <HamburgerMenu onClick={handleMenuToggle}>
-          <OpenMenu menuProp={navMenuOpen}>
+        <HamburgerMenu onClick={openNav}>
+          <OpenMenu menuProp={navOpen}>
             <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'>
               <g fill='none' fillRule='evenodd'>
                 <path
@@ -169,13 +196,13 @@ const Nav = () => {
               </g>
             </svg>
           </OpenMenu>
-          <CloseMenu menuProp={navMenuOpen}>
+          <CloseMenu menuProp={navOpen}>
             <svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'>
-              <g fill='none' fill-rule='evenodd'>
+              <g fill='none' fillRule='evenodd'>
                 <path
                   fill='#FFF'
                   stroke='#2C2830'
-                  stroke-width='1.5'
+                  strokeWidth='1.5'
                   d='M.75.75h30.5v30.5H.75z'
                 />
                 <g fill='#2C2830'>
@@ -187,7 +214,7 @@ const Nav = () => {
           </CloseMenu>
         </HamburgerMenu>
       </NavBar>
-      <NavMenu menuProp={navMenuOpen}>
+      <NavMenu menuProp={navOpen}>
         <NavList>
           <ListItem>
             <Link href='/'>How we work</Link>
@@ -199,7 +226,7 @@ const Nav = () => {
             <Link href='/'>Account</Link>
           </ListItem>
           <ListItem>
-            <Link href='/'>View plans</Link>
+            <ViewPlans href='/'>View plans</ViewPlans>
           </ListItem>
         </NavList>
         <NavMenuLogo>
@@ -209,7 +236,7 @@ const Nav = () => {
             height='218'
             style={{ width: '100%', height: '100%' }}
           >
-            <g fill='none' fill-rule='evenodd' stroke='#96A9C6'>
+            <g fill='none' fillRule='evenodd' stroke='#96A9C6'>
               <path d='M309.564 41.343C213.876 11.406 115.487-38.526 14.757 52.675c-100.73 91.202-164.058 171.093-123.163 274.463 40.896 103.37 207.827 38.985 256.33 131.373 48.503 92.388-58.069 176.237-12.123 258.462 45.945 82.225 81.274 134.924 228.927 82.643 147.654-52.282 134.04-185.308 246.324-263.207 112.283-77.898 233.767-194.516 67.05-402.604C511.383-74.283 405.25 71.28 309.563 41.343z' />
               <path d='M321.902 90.672c-77.983-24.314-158.17-64.869-240.262 9.205C-.454 173.95-52.065 238.837-18.736 322.794c33.33 83.956 169.376 31.663 208.905 106.7 39.529 75.037-47.325 143.14-9.88 209.922C217.732 706.2 246.524 749 366.86 706.538c120.335-42.463 109.24-150.506 200.75-213.775 91.509-63.269 190.516-157.985 54.644-326.993C486.382-3.238 399.885 114.986 321.902 90.672z' />
               <path d='M344.947 122.546c-63.103-19.824-127.99-52.889-194.418 7.504-66.43 60.393-108.193 113.297-81.223 181.748s137.057 25.816 169.044 86.995c31.986 61.178-38.296 116.703-7.996 171.152 30.3 54.449 53.599 89.346 150.973 54.725 97.374-34.62 88.396-122.71 162.445-174.293 74.048-51.584 154.164-128.808 44.218-266.603C478.043 45.98 408.05 142.37 344.947 122.546z' />
